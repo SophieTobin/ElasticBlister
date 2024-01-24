@@ -13,7 +13,7 @@ epsilon = 0.005
 def main(delta,itmax,epsilon,readfiles=['Gaussian','Gaussian']):
     pointsinwave = 10.0 #number of grid points per wavelength
     ttest = 1.0 #length of initial run to find best grid spacing
-    largedx, smalldx, wavelength, x, h, dx, zeroloc, N, t, plotexponent, tplot = initialise(readfiles,delta)
+    largedx, smalldx, wavelength, x, h, dx, zeroloc, N, t, plotexponent, tplot = initialise(readfiles,delta,pointsinwave)
     dt = 0.0000001
     xback, backindex, xfront, frontindex, xbackhead = findedges(h,x,N,delta)
     h,x,dx,N,largegridindex = regrid(h,x,dx,N,wavelength,frontindex,zeroloc,largedx,smalldx)
@@ -358,7 +358,7 @@ def makePressure(x,h,dx,N):
     P = derivatives[2:N-1] - x[2:N-1]
     return P
 
-def initialise(filelocs,delta):
+def initialise(filelocs,delta,pointsinwave):
     if filelocs[0] == 'Gaussian':
         #If no files specified to read in, initialise with a Gaussian.
         largedx = 1.0/128.0
@@ -411,12 +411,12 @@ def initialise(filelocs,delta):
     return largedx, smalldx, wavelength, x, h, dx, zeroloc, N, t, plotexponent, tplot
     
 
-fileloc = 'de-5.txt'
-xfileloc = 'xde-5.txt'
-#oldxfileloc = 'xde-5-old.txt'
-hfileloc = 'hde-5.txt'
-#oldhfileloc = 'hde-5-old.txt'
-pfileloc = 'Pde-5.txt'
+fileloc = 'de-3.txt'
+xfileloc = 'xde-3.txt'
+#oldxfileloc = 'xde-3-old.txt'
+hfileloc = 'hde-3.txt'
+#oldhfileloc = 'hde-3-old.txt'
+pfileloc = 'Pde-3.txt'
 f = open(fileloc,'x')
 f.close()
 f = open(xfileloc,'x')
@@ -425,5 +425,5 @@ f = open(hfileloc,'x')
 f.close()
 f = open(pfileloc,'x')
 f.close()
-main(0.1**5.0,itmax,epsilon)
-#main(0.1**5.0,itmax,epsilon,readfiles=[oldxfileloc,oldhfileloc]) #Use this if you want to read in an old file for initial conditions.
+main(0.1**3.0,itmax,epsilon)
+#main(0.1**3.0,itmax,epsilon,readfiles=[oldxfileloc,oldhfileloc]) #Use this if you want to read in an old file for initial conditions.
