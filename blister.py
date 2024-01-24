@@ -47,7 +47,7 @@ def main(delta,itmax,epsilon,readfiles=['Gaussian','Gaussian']):
                 h,x,dx,N,largegridindex = regrid(h,x,dx,N,wavelength,frontindex,largegridindex,largedx,smalldx)
                 print('Decreased front resolution')
         if checkgrid(h,dx,largegridindex,frontindex):
-            print('grid too small')
+            print('regridding due to large round off error')
             xback, backindex, xfront, frontindex, xbackhead = findedges(h,x,N,delta)
             h,x,dx,N,largegridindex = regrid(h,x,dx,N,wavelength,frontindex,largegridindex,largedx,smalldx)
         if (it-lastchecked) == checkinterval:
@@ -257,9 +257,9 @@ def timestep(h,x,t,dt,dx,N,delta):
     if min(hnew+delta) < 0.0:
         isnegative = True
         hnew = h
-        t += dt
     else:
         isnegative = False
+        t += dt
     P = makePressure(x,(h+hnew)/2.0,dx,N)
     return isnegative, hnew, P, t
 
