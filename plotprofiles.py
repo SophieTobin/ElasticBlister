@@ -9,9 +9,12 @@ import matplotlib.colors as colors
 plt.rcParams['text.usetex'] = True
 
 directory = '/store/DAMTP/st646/PythonBlisterFiles/2023-01-13/'
-fnames = ['hde-4.txt','xde-4.txt']
-
-exponent = 4.0
+#Plots in paper used delta = 10^{-3}
+#fnames = ['hde-4.txt','xde-4.txt']
+#exponent = 4.0
+#To plot output of blister.py without changing delta from the default 10^{-3}, use these:
+fnames = ['hde-3.txt','xde-3.txt']
+exponent = 3.0
 
 f = open(directory+fnames[0])
 csvfile = csv.reader(f,quoting=csv.QUOTE_NONNUMERIC)
