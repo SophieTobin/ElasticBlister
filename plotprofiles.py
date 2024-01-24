@@ -8,7 +8,7 @@ import matplotlib.colors as colors
 
 plt.rcParams['text.usetex'] = True
 
-directory = '/store/DAMTP/st646/PythonBlisterFiles/2023-01-13/'
+directory = './'
 #Plots in paper used delta = 10^{-3}
 #fnames = ['hde-4.txt','xde-4.txt']
 #exponent = 4.0
