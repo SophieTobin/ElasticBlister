@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 import math
 
 directory = './'
-files = [['de-2.txt',2],['de-3.txt',3],['de-4.txt',4],['de-4pt5.txt',4.5],['de-5.txt',5],['de-5pt5.txt',5.5]]
+#files = [['de-2.txt',2],['de-3.txt',3],['de-4.txt',4],['de-4pt5.txt',4.5],['de-5.txt',5],['de-5pt5.txt',5.5]] #plot all profiles included in paper after running for each value of delta
+files = [['de-3.txt',3]] #plot only delta = 10^{-3}
 
 plt.rcParams['text.usetex'] = True
 
