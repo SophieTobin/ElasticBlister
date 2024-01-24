@@ -51,20 +51,17 @@ def main(delta,itmax,epsilon,readfiles=['Gaussian','Gaussian']):
             xback, backindex, xfront, frontindex, xbackhead = findedges(h,x,N,delta)
             h,x,dx,N,largegridindex = regrid(h,x,dx,N,wavelength,frontindex,largegridindex,largedx,smalldx)
         if (it-lastchecked) == checkinterval:
-            t += dt
-            dt, checkinterval, h, P = checktimestep(h,x,dt,dx,N,delta,epsilon,checkinterval)
+            dt, checkinterval, h, P, t = checktimestep(h,x,t,dt,dx,N,delta,epsilon,checkinterval)
             lastchecked = it
             if dt < 10.0**(-12.0):
                 print('stepsize too small')
                 print(dt)
                 sys.exit()
         else:
-            isnegative, h, P = timestep(h,x,dt,dx,N,delta)
+            isnegative, h, P, t = timestep(h,x,t,dt,dx,N,delta)
             if isnegative:
                 dt = dt/1.5
                 print('decreased timestep due to negative h')
-            else:
-                t += dt
         xback, backindex, xfront, frontindex, xbackhead = findedges(h,x,N,delta)
         if t > tplot:
             print(t)
@@ -220,30 +217,29 @@ def findedges(h,x,N,delta):
             break
     return xback, backindex, xfront, frontindex, xbackhead
 
-def checktimestep(h,x,dt,dx,N,delta,epsilon,checkinterval):
-    #THIS DOES NOT GIVE ACCURATE RESULTS IF THE LARGE TIMESTEP ERRONEOUSLY GIVES NEGATIVE H
-    #If h after the timestep happens to be negative when the timestep is checked, the check will be inaccurate as the function 'timestep' will not update h.
-    #This is unlikely to happen, and as far as I know did not happen in any of my original runs.
-    #I will fix this in an update after uploading this to github, but have left it for now so that there is a record of the version with the bug.
-    isnegative, hneworig, Porig = timestep(h,x,dt,dx,N,delta)
-    isnegative, hnewsmall, Psmall = timestep(h,x,dt/2.0,dx,N,delta)
-    isnegative, hnewsmall, Psmall = timestep(hnewsmall,x,dt/2.0,dx,N,delta)
+def checktimestep(h,x,t,dt,dx,N,delta,epsilon,checkinterval):
+    isnegativeorig, hneworig, Porig, torig = timestep(h,x,t,dt,dx,N,delta)
+    isnegative, hnewsmall, Psmall, tsmall = timestep(h,x,t,dt/2.0,dx,N,delta)
+    isnegative, hnewsmall, Psmall, tsmall = timestep(hnewsmall,x,tsmall,dt/2.0,dx,N,delta)
     error = errorsize(hneworig,hnewsmall,N,delta)
-    if error > 2.0*epsilon:
+    if error > 2.0*epsilon or isnegativeorig:
         hnew = hnewsmall
         P = Psmall
+        t = tsmall
         dt = dt/1.5
         checkinterval = (1+checkinterval)//2
     elif error < epsilon/10.0:
         hnew = hneworig
         P = Porig
+        t = torig
         dt = dt*1.5
         checkinterval = (1+checkinterval)//2
     else:
         hnew = hneworig
         P = Porig
+        t = torig
         checkinterval += 1
-    return dt, checkinterval, hnew, P
+    return dt, checkinterval, hnew, P, t
 
 def errorsize(h1, h2, N,delta):
     diff = h1-h2
@@ -254,17 +250,18 @@ def errorsize(h1, h2, N,delta):
         print(error)
     return error
 
-def timestep(h,x,dt,dx,N,delta):
+def timestep(h,x,t,dt,dx,N,delta):
     hnew = naivetimestep(h,h+0.0,dt,dx,N,delta)
     hmid = (hnew+h)/2.0
     hnew = naivetimestep(h,hmid,dt,dx,N,delta)
     if min(hnew+delta) < 0.0:
         isnegative = True
         hnew = h
+        t += dt
     else:
         isnegative = False
     P = makePressure(x,(h+hnew)/2.0,dx,N)
-    return isnegative, hnew, P
+    return isnegative, hnew, P, t
 
 def naivetimestep(h,hmid,dt,dx,N,delta):
     hmid += delta
